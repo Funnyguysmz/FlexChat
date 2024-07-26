@@ -1,10 +1,12 @@
+import { useRouter } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import { View, Image, StyleSheet, Animated, Text, TouchableOpacity } from "react-native";
 
 export default function Launch() {
     const fadeAnim = useRef(new Animated.Value(1)).current;
     const colorAnim = useRef(new Animated.Value(0)).current;
-
+    const router = useRouter();
+    
     useEffect(() => {
         setTimeout(() => {
             Animated.sequence([
@@ -19,7 +21,7 @@ export default function Launch() {
                     useNativeDriver: true,
                 })
             ]).start();
-        }, 3000);
+        }, 2000);
     }, [fadeAnim, colorAnim]);
 
     return (
@@ -40,10 +42,10 @@ export default function Launch() {
                     style={styles.logo} 
                 />
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={() => {router.push('pages/login')}}>
                         <Text style={styles.buttonText}>登录</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={() => {router.push('pages/register')}}>
                         <Text style={styles.buttonText}>注册</Text>
                     </TouchableOpacity>
                 </View>

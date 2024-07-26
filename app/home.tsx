@@ -1,9 +1,11 @@
+import { useRouter } from "expo-router";
 import React, { useEffect, useRef} from "react";
 import { StyleSheet, View, Image, Text, TouchableOpacity, Animated } from "react-native";
 
 export default function Home() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
+  const router = useRouter();
+  
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
