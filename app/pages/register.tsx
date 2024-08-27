@@ -12,12 +12,13 @@ import ScreenLayout from "../../components/ScreenLayout";
 import { theme } from "@/styles/theme";
 import { useRouter } from "expo-router";
 
-const local = true;
+const local = false;
 
 export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [checkpassword, setcheckPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
   const router = useRouter();
 
   const handleRegister = async () => {
@@ -25,25 +26,32 @@ export default function Register() {
       Alert.alert("注册成功");
       router.replace("pages/login");
     } else {
+      // console.log("online test!");
       try {
-        const response = await fetch("my-url/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            // username: username,
-            // password: password,
-          }),
-        });
+        const response = await fetch(
+          "http://47.113.118.26:8080/user/register",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: username,
+              password: password,
+              code: code,
+              email: email,
+            }),
+          }
+        );
+        const data = await response.json();
 
-        if (response.ok) {
-          const data = await response.json();
+        console.log(data);
+
+        if (response.ok && data.code === 200) {
           Alert.alert("注册成功");
           router.replace("pages/login");
         } else {
-          const errorData = await response.json();
-          Alert.alert("注册失败", errorData.message);
+          Alert.alert("注册失败", data.msg);
         }
       } catch (error) {
         Alert.alert("注册失败", "发生未知错误");
@@ -56,7 +64,24 @@ export default function Register() {
       <View style={styles.inputContainer}>
         <Text style={styles.title}>注册</Text>
         <TextInput
-          placeholder="用户名"
+          placeholder="邮箱地址"
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+        />
+        <View style={styles.codeContainer}>
+          <TextInput
+            placeholder="验证码"
+            style={styles.inputCode}
+            value={code}
+            onChangeText={setCode}
+          />
+          <TouchableOpacity onPress={() => {}} style={styles.sendButton}>
+            <Text style={styles.buttonText}>发送</Text>
+          </TouchableOpacity>
+        </View>
+        <TextInput
+          placeholder="昵称"
           style={styles.input}
           value={username}
           onChangeText={setUsername}
@@ -67,13 +92,6 @@ export default function Register() {
           style={styles.input}
           value={password}
           onChangeText={setPassword}
-        />
-        <TextInput
-          placeholder="确认密码"
-          secureTextEntry
-          style={styles.input}
-          value={checkpassword}
-          onChangeText={setcheckPassword}
         />
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>注册</Text>
@@ -111,5 +129,25 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  codeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  inputCode: {
+    flex: 2, // 占据2/3的宽度
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    paddingLeft: 10,
+    borderRadius: 5,
+  },
+  sendButton: {
+    flex: 1, // 占据1/3的宽度
+    backgroundColor: theme.primaryColor,
+    padding: 12,
+    borderRadius: 4,
+    alignItems: "center",
+    marginLeft: 10,
   },
 });

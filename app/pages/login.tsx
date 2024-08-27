@@ -11,7 +11,7 @@ import {
 import ScreenLayout from "../../components/ScreenLayout";
 import { theme } from "@/styles/theme";
 import { useRouter } from "expo-router";
-
+import TokenService from "../service/TokenService";
 const local = true;
 
 export default function Login() {
@@ -22,27 +22,31 @@ export default function Login() {
   const handleLogin = async () => {
     if (local) {
       Alert.alert("登录成功");
-      router.replace("/(tabs)/index");
+      router.replace("pages/(tabs)");
     } else {
+      // console.log("online test!");
       try {
-        const response = await fetch("my-url/login", {
+        const response = await fetch("http://47.113.118.26:8080/user/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username: username,
+            email: username,
             password: password,
           }),
         });
+        const data = await response.json();
 
-        if (response.ok) {
-          const data = await response.json();
+        console.log(data);
+
+        if (response.ok && data.code === 200) {
+          const tokenService = TokenService.getInstance();
+          await tokenService.setToken(data.data.token);
           Alert.alert("登录成功");
-          router.replace("pages/impages/chatHome");
+          router.replace("pages/(tabs)");
         } else {
-          const errorData = await response.json();
-          Alert.alert("登陆失败", errorData.message);
+          Alert.alert("登陆失败", data.msg);
         }
       } catch (error) {
         Alert.alert("登陆失败", "发生未知错误");
@@ -55,7 +59,7 @@ export default function Login() {
       <View style={styles.inputContainer}>
         <Text style={styles.title}>登录</Text>
         <TextInput
-          placeholder="用户名"
+          placeholder="邮箱"
           style={styles.input}
           value={username}
           onChangeText={setUsername}
