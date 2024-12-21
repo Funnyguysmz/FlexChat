@@ -29,17 +29,16 @@ export default function Register() {
       // console.log("online test!");
       try {
         const response = await fetch(
-          "http://47.113.118.26:8080/user/register",
+          "http://47.113.118.26:9090/register",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              username: username,
+              nickname: username,
               password: password,
-              code: code,
-              email: email,
+              phone_number: email,
             }),
           }
         );
@@ -64,12 +63,12 @@ export default function Register() {
       <View style={styles.inputContainer}>
         <Text style={styles.title}>注册</Text>
         <TextInput
-          placeholder="邮箱地址"
+          placeholder="手机号/用户名"
           style={styles.input}
           value={email}
           onChangeText={setEmail}
         />
-        <View style={styles.codeContainer}>
+        {/* <View style={styles.codeContainer}>
           <TextInput
             placeholder="验证码"
             style={styles.inputCode}
@@ -79,7 +78,7 @@ export default function Register() {
           <TouchableOpacity onPress={() => {}} style={styles.sendButton}>
             <Text style={styles.buttonText}>发送</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
         <TextInput
           placeholder="昵称"
           style={styles.input}

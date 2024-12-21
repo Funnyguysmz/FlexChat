@@ -11,45 +11,81 @@ import {
 import FriendItem from "../../components/frienditem";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import TokenService from "@/app/service/TokenService";
+import Toast from "react-native-toast-message";
+import { useRouter } from "expo-router";
 
 interface Friend {
   id: string;
   avatar: string;
-  username: string;
-  email: string;
+  nickname: string;
+  phone_number: string;
   lastMessage: string;
 }
 
 export default function ChatsScreen() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [title, setTitle] = useState("Loading...");
+  const [refreshing, setRefreshing] = useState(false);  //刷新控件
+  const router = useRouter();  //路由实例
+  const [token, setToken] = useState<string | null>(null); // 保存 token
 
   useEffect(() => {
-    // 预留方法来获取好友列表
-    const fetchFriends = async () => {
+    fetchFriends();
+  }, []);
+
+  const fetchFriends = async () => {
+    try {
       const tokenService = TokenService.getInstance();
       const token = await tokenService.getToken();
+      setToken(token);
       const response = await fetch(
-        "http://47.113.118.26:8080/get/friend/list",
+        "http://47.113.118.26:9090/friend/list",
         {
-          method: "POST",
+          method: "GET",
           headers: {
-            "Content-Type": "application/json",
+            token:token,
           },
-          body: JSON.stringify({
-            token: token,
-          }),
         }
       );
       const data = await response.json();
+      console.log(data.data.friends);
       if (response.ok && data.code === 200) {
+        Toast.show({
+          type: "success",
+          text1: "加载成功",
+          position:"bottom",
+          bottomOffset: 100,
+          visibilityTime: 1500,
+        });
+        setFriends(data.data.friends);  //好友列表
       } else {
+        Toast.show({
+          type: "error",
+          text1: "加载失败",
+          text2: data.msg || "服务器返回错误",
+          position:"bottom",
+          bottomOffset: 100,
+        });
       }
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "网络错误",
+        text2: "请检查网络连接 🌐",
+        position:"bottom",
+        bottomOffset: 100,
+      });
+    } finally {
       setTitle("FlexChat");
-    };
+      setRefreshing(false); // 结束刷新状态
+    }
+  };
 
+  const onRefresh = () => {
+    setTitle("Loading");
+    setRefreshing(true); // 开始刷新
     fetchFriends();
-  }, []);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -63,13 +99,22 @@ export default function ChatsScreen() {
         data={friends}
         renderItem={({ item }) => (
           <FriendItem
+            id={item.id}
             avatar={item.avatar}
-            name={item.username}
+            name={item.nickname}
             lastMessage={item.lastMessage}
+            onPress={() => {
+              router.push({
+                pathname: "pages/chat/chatScreen",
+                params: {id: item.id, name: item.nickname, token: token},  //传递token todo
+              });
+            }}
           />
         )}
         keyExtractor={(item) => item.id}
         style={styles.list}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
       />
     </SafeAreaView>
   );
