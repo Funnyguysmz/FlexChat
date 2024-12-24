@@ -11,6 +11,7 @@ import TokenService from "@/app/service/TokenService";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Toast from "react-native-toast-message";
 
 export default function AddFriendScreen() {
   const router = useRouter();
@@ -22,6 +23,16 @@ export default function AddFriendScreen() {
       const token = await tokenService.getToken();
       const response = await Service.addFriend(friendId, token); // 替换为实际的friendId
       console.log(response);
+
+      if (response.code == 200) {
+        Toast.show({
+          type: "success",
+          text1: "添加成功",
+          position: "bottom",
+          bottomOffset: 100,
+          visibilityTime: 1500,
+        });
+      }
     } catch (error) {
       console.error(error);
     }

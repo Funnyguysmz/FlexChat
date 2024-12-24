@@ -1,34 +1,37 @@
 import React, { createContext, useContext, useState, FC, ReactNode } from 'react';
 
 // 定义 context 类型
-interface ClientIdContextType {
+interface ClientContextType {
   clientId: number;
   setClientId: (id: number) => void;
+  seq: number;
+  setSeq: (seq: number) => void;
 }
 
 // 创建 Context，默认值为 undefined
-const ClientIdContext = createContext<ClientIdContextType | undefined>(undefined);
+const ClientContext = createContext<ClientContextType | undefined>(undefined);
 
 // 自定义 hook 来访问 context
-export const useClientId = (): ClientIdContextType => {
-  const context = useContext(ClientIdContext);
+export const useClientContext = (): ClientContextType => {
+  const context = useContext(ClientContext);
   if (!context) {
-    throw new Error('useClientId must be used within a ClientIdProvider');
+    throw new Error('useClientContext must be used within a ClientProvider');
   }
   return context;
 };
 
-// 简化 ClientIdProvider 组件，确保它只负责管理 clientId
-interface ClientIdProviderProps {
+// 简化 ClientProvider 组件，确保它只负责管理 clientId 和 seq
+interface ClientProviderProps {
   children: ReactNode;
 }
 
-export const ClientIdProvider: FC<ClientIdProviderProps> = ({ children }) => {
+export const ClientProvider: FC<ClientProviderProps> = ({ children }) => {
   const [clientId, setClientId] = useState<number>(0); // 初始值为 0
+  const [seq, setSeq] = useState<number>(1000); // 初始值为 1000（你可以根据需要修改初始值）
 
   return (
-    <ClientIdContext.Provider value={{ clientId, setClientId }}>
+    <ClientContext.Provider value={{ clientId, setClientId, seq, setSeq }}>
       {children}
-    </ClientIdContext.Provider>
+    </ClientContext.Provider>
   );
 };

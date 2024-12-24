@@ -1,13 +1,37 @@
 import { Stack } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import Toast from "react-native-toast-message";
-import { ClientIdProvider } from "./service/ClientIdContext";
-import { ActionSheetProvider} from '@expo/react-native-action-sheet'
+import { ClientProvider } from "./service/ClientIdContext";
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import TokenService from "./service/TokenService";
+import WebSocketService from "./pages/chat/WebSocketService";
 
 export default function RootLayout() {
+  useEffect(() => {
+    // 检查用户是否已登录并建立WebSocket连接
+    const checkAuthAndConnect = async () => {
+      const tokenService = TokenService.getInstance();
+      const token = await tokenService.getToken();
+      
+      if (token) {
+        // 如果有token，建立WebSocket连接
+        WebSocketService.getInstance().connect(token);
+      } else {
+        console.log('No token');
+      }
+    };
+
+    checkAuthAndConnect();
+
+    // 清理函数
+    return () => {
+      WebSocketService.getInstance().disconnect();
+    };
+  }, []);
+
   return (
     <ActionSheetProvider>
-      <ClientIdProvider>
+      <ClientProvider>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
           <Stack.Screen name="pages/login" />
@@ -17,7 +41,7 @@ export default function RootLayout() {
           <Stack.Screen name="pages/addPages" />
         </Stack>
         <Toast />
-      </ClientIdProvider>
+      </ClientProvider>
     </ActionSheetProvider>
   );
 }

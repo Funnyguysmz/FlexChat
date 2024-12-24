@@ -12,28 +12,30 @@ import ScreenLayout from "../../components/ScreenLayout";
 import { theme } from "@/styles/theme";
 import { useRouter } from "expo-router";
 import TokenService from "../service/TokenService";
-import { useClientId } from "../service/ClientIdContext";
+import { useClientContext } from "../service/ClientIdContext";
+import WebSocketService from "./chat/WebSocketService";
+import StorageService from "../service/StorageService";
 const local = false;
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const { setClientId } = useClientId();
+  const { setClientId, setSeq } = useClientContext();
 
   const handleLogin = async () => {
-    if (local) {   //本地测试路由
+    if (local) {
       Alert.alert("登录成功");
       router.replace("pages/(tabs)");
-    } else {    //在线测试路由
+    } else {
       console.log("online test!");
       try {
         const formData = new FormData();
-        formData.append("phone_number", username); // 添加手机号
-        formData.append("password", password); // 添加密码
+        formData.append("phone_number", username);
+        formData.append("password", password);
         const response = await fetch("http://47.113.118.26:9090/login", {
           method: "POST",
-          body: formData
+          body: formData,
         });
         const data = await response.json();
 
@@ -41,12 +43,23 @@ export default function Login() {
 
         if (response.ok && data.code === 200) {
           const tokenService = TokenService.getInstance();
+          await tokenService.clearToken();
           await tokenService.setToken(data.data.token);
-          await tokenService.setValue('CURRENT_USER_ID',data.data.user_id);
-          Alert.alert("登录成功");
+          await tokenService.setValue("CURRENT_USER_ID", data.data.user_id);
 
+          // 登录成功后建立WebSocket连接
+          await WebSocketService.getInstance().connect(data.data.token);
+
+          //尝试获取或者新建该用户的seq，存在则获取，不存在则设置为0
+          await StorageService.getInstance().setCurrentUserId(data.data.user_id);
+          await StorageService.getInstance().setSeq(data.data.user_id,0);
+          const Seq = await StorageService.getInstance().getSeq(data.data.user_id);
+          setSeq(Seq);
+          await WebSocketService.getInstance().sendSyncMessage(Seq);
+
+          //重置clientid
           setClientId(0);
-          
+
           router.replace("pages/(tabs)");
         } else {
           Alert.alert("登陆失败", data.msg);

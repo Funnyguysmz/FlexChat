@@ -13,7 +13,6 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import TokenService from "@/app/service/TokenService";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
-import { useActionSheet } from "@expo/react-native-action-sheet";
 
 interface Friend {
   id: string;
@@ -30,42 +29,10 @@ export default function ChatsScreen() {
   const router = useRouter(); //路由实例
   const [token, setToken] = useState<string | null>(null); // 保存 token
   const [showFloatingList, setShowFloatingList] = useState(false);
-  const { showActionSheetWithOptions } = useActionSheet();
 
   // 右上角悬浮菜单
   const toggleFloatingList = () => {
     setShowFloatingList(!showFloatingList);
-  };
-
-  //长按菜单
-  const handleLongPress = (item: { nickname: any; id: any }) => {
-    const options = [
-      `查看资料: ${item.nickname}`,
-      `删除好友: ${item.nickname}`,
-      "取消",
-    ];
-
-    const destructiveButtonIndex = 1; // 删除好友的按钮是具有破坏性的操作
-    const cancelButtonIndex = 2; // 取消按钮
-
-    showActionSheetWithOptions(
-      {
-        options,
-        cancelButtonIndex,
-        destructiveButtonIndex,
-      },
-      (buttonIndex) => {
-        if (buttonIndex === 0) {
-          // 查看资料
-          console.log("查看资料", item.id);
-          // 这里可以跳转到资料页面
-        } else if (buttonIndex === 1) {
-          // 删除好友
-          console.log("删除好友", item.id);
-          // 这里可以执行删除好友的逻辑
-        }
-      }
-    );
   };
 
   useEffect(() => {
@@ -166,7 +133,7 @@ export default function ChatsScreen() {
           <TouchableOpacity
             style={styles.option}
             onPress={() => {
-              router.push({ pathname: "pages/createGroup" });
+              router.push({ pathname: "pages/addPages/CreateGroup" });
               toggleFloatingList();
             }}
           >
