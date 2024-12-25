@@ -27,19 +27,16 @@ export default function Register() {
       router.replace("pages/login");
     } else {
       // console.log("online test!");
+      const formData = new FormData();
+        formData.append("phone_number", email);
+        formData.append("password", password);
+        formData.append("nickname", username);
       try {
         const response = await fetch(
           "http://47.113.118.26:9090/register",
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              nickname: username,
-              password: password,
-              phone_number: email,
-            }),
+            body: formData,
           }
         );
         const data = await response.json();

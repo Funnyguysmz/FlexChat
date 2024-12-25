@@ -103,7 +103,11 @@ export default function ChatsScreen() {
         renderItem={({ item }) => (
           <FriendItem
             id={item.id}
-            avatar={item.avatar}
+            avatar={
+              item.avatar
+                ? { uri: item.avatar }
+                : require("@/assets/images/nowholder.jpeg")
+            }
             name={item.nickname}
             lastMessage={item.lastMessage}
             onPress={() => {

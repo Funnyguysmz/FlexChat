@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,10 +9,29 @@ import {
   TouchableOpacity,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import StorageService from "@/app/service/TokenService";
 
 export default function Me() {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [username, setUsername] = useState("Your Name");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchData = async () => {
+      const fid =
+        await StorageService.getInstance().getValue("CURRENT_USER_ID");
+      if (isMounted) {
+        setUsername(String(fid));
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false; // 清理逻辑
+    };
+  }, []);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -35,13 +54,13 @@ export default function Me() {
             source={
               avatar
                 ? { uri: avatar }
-                : require("@/assets/images/placeholder.png")
+                : require("@/assets/images/nowholder.jpeg")
             }
             style={styles.avatar}
           />
         </View>
       </TouchableOpacity>
-      <Text style={styles.username}>{username}</Text>
+      <Text style={styles.username}>{"Fid:" + username}</Text>
       <Button title="Change Avatar" onPress={pickImage} />
     </View>
   );
