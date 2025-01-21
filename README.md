@@ -1,50 +1,36 @@
-# Welcome to your Expo app 👋
+# IM即时通讯项目实践
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## 简介
 
-## Get started
+本项目基于Expo+React-Native开发，后端部分已部署在云服务器上。
 
-1. Install dependencies
+项目可能存在部分未修正bug，例如离线消息接收时间有误等 ~~（有空可能会改）~~
 
-   ```bash
-   npm install
-   ```
+## 功能介绍
 
-2. Start the app
+~~群聊功能接口部分已做，未落地实现~~
 
-   ```bash
-    npx expo start
-   ```
+好友单聊支持
 
-In the output, you'll find options to open the app in a
+注册时无需手机号验证，所以可以随便输入
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 运行
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+首先需要安装依赖
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```shell
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+安装好后可采用2种启动方式，测试设备在局域网下可采用：
 
-## Learn more
+```shell
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+如果局域网不通畅、不在局域网下或者需要远程测试，可采用：
+```shell
+npx expo start --tunnel
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+执行后可见操作列表以及二维码，此时按下`s`键切换到`Expo Go`调试模式，再根据你的需要选择测试设备，`macOS`下可直接启动模拟器。
